@@ -2,6 +2,55 @@
 
 {% block title %}Spendly — Track Every Rupee{% endblock %}
 
+{% block head %}
+<style>
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+.modal-overlay.is-open { display: flex; }
+.modal-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 840px;
+}
+.modal-box {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+.modal-close {
+    position: absolute;
+    top: -2.6rem;
+    right: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+}
+.modal-close:hover { opacity: 1; }
+.modal-box iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
 <section class="hero">
@@ -20,7 +69,7 @@
         </p>
         <div class="hero-actions">
             <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
-            <a href="{{ url_for('login') }}" class="btn-primary">See how it works</a>
+            <button id="hiw-btn" class="btn-primary">See how it works</button>
         </div>
     </div>
     <div class="hero-visual">
@@ -101,4 +150,52 @@
     </div>
 </section>
 
+<div class="modal-overlay" id="hiw-modal" role="dialog" aria-modal="true" aria-label="See how Spendly works">
+    <div class="modal-wrap">
+        <button class="modal-close" id="hiw-close" aria-label="Close">&times;</button>
+        <div class="modal-box">
+        <iframe
+            id="hiw-iframe"
+            src=""
+            data-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            title="See how Spendly works"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+        ></iframe>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var btn      = document.getElementById('hiw-btn');
+    var overlay  = document.getElementById('hiw-modal');
+    var closeBtn = document.getElementById('hiw-close');
+    var iframe   = document.getElementById('hiw-iframe');
+
+    function openModal() {
+        iframe.src = iframe.dataset.src;
+        overlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        iframe.src = '';
+        overlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+
+    btn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
+    });
+}());
+</script>
 {% endblock %}
