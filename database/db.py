@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "spendly.db")
@@ -78,3 +78,12 @@ def create_user(name, email, password):
     )
     conn.commit()
     conn.close()
+
+
+def get_user_by_email(email):
+    conn = get_db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE email = ?", (email,)
+    ).fetchone()
+    conn.close()
+    return user
