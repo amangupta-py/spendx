@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash
 from database.db import get_db, init_db, seed_db, create_user, get_user_by_email
+from database.queries import get_user_by_id, get_summary_stats, get_recent_transactions, get_category_breakdown
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-in-production"
@@ -98,30 +99,15 @@ def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
 
-    user = {
-        "name": session.get("user_name", "Demo User"),
-        "email": "demo@spendly.com",
-        "member_since": "June 2026",
-    }
-    stats = {
-        "total_spent": "₹327.23",
-        "transaction_count": 8,
-        "top_category": "Food",
-    }
-    transactions = [
-        {"date": "20 Jun", "description": "Grocery run",    "category": "Food",          "amount": "₹22.75"},
-        {"date": "18 Jun", "description": "Miscellaneous",  "category": "Other",         "amount": "₹9.99"},
-        {"date": "15 Jun", "description": "New shoes",      "category": "Shopping",      "amount": "₹64.99"},
-        {"date": "12 Jun", "description": "Movie ticket",   "category": "Entertainment", "amount": "₹18.00"},
-        {"date": "08 Jun", "description": "Pharmacy",       "category": "Health",        "amount": "₹45.00"},
-    ]
-    categories = [
-        {"name": "Food",      "amount": "₹35.25",  "pct": 68},
-        {"name": "Bills",     "amount": "₹120.00", "pct": 100},
-        {"name": "Shopping",  "amount": "₹64.99",  "pct": 54},
-        {"name": "Transport", "amount": "₹35.00",  "pct": 29},
-        {"name": "Other",     "amount": "₹27.99",  "pct": 23},
-    ]
+    user = get_user_by_id(session["user_id"])
+    if user is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    stats        = get_summary_stats(session["user_id"])
+    transactions = get_recent_transactions(session["user_id"])
+    categories   = get_category_breakdown(session["user_id"])
+
     return render_template(
         "profile.html",
         user=user,
