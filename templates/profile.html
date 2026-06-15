@@ -17,6 +17,24 @@
         </div>
     </div>
 
+    <!-- Date filter bar -->
+    <div class="profile-filter-bar">
+        <div class="filter-presets">
+            <a href="{{ url_for('profile') }}" class="filter-pill {% if active_preset == 'all' %}filter-pill--active{% endif %}">All Time</a>
+            <a href="{{ url_for('profile', preset='this_month') }}" class="filter-pill {% if active_preset == 'this_month' %}filter-pill--active{% endif %}">This Month</a>
+            <a href="{{ url_for('profile', preset='last_3') }}" class="filter-pill {% if active_preset == 'last_3' %}filter-pill--active{% endif %}">Last 3 Months</a>
+            <a href="{{ url_for('profile', preset='last_6') }}" class="filter-pill {% if active_preset == 'last_6' %}filter-pill--active{% endif %}">Last 6 Months</a>
+        </div>
+        <form method="GET" action="{{ url_for('profile') }}" class="filter-custom">
+            <input type="date" name="start_date" class="filter-date-input"
+                   value="{{ start_date if active_preset == 'custom' else '' }}" aria-label="Start date">
+            <span class="filter-sep">to</span>
+            <input type="date" name="end_date" class="filter-date-input"
+                   value="{{ end_date if active_preset == 'custom' else '' }}" aria-label="End date">
+            <button type="submit" class="btn-primary filter-apply">Apply</button>
+        </form>
+    </div>
+
     <!-- Summary stats -->
     <div class="profile-stats">
         <div class="mock-stat-card">
