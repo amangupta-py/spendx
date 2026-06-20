@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics — Spendly{% endblock %}
+
+{% block content %}
+<section class="analytics-section">
+    <div class="analytics-card">
+        <!-- Corner decorations -->
+        <div class="analytics-corner analytics-corner--tl"></div>
+        <div class="analytics-corner analytics-corner--tr"></div>
+
+        <div class="analytics-content">
+            <!-- Clock icon -->
+            <div class="analytics-icon">
+                <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="19" cy="19" r="13" stroke="white" stroke-width="2.2"/>
+                    <path d="M19 12v7.5l4.5 4.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <!-- Badge -->
+            <div class="analytics-badge">Coming Soon</div>
+
+            <!-- Heading -->
+            <h1 class="analytics-title">Advanced Analytics</h1>
+
+            <!-- Body -->
+            <p class="analytics-body">
+                We're working on powerful insights and visualizations to help
+                you understand your spending patterns better.
+            </p>
+
+            <!-- Animated dots -->
+            <div class="analytics-dots" id="analyticsDots">
+                <div class="analytics-dot analytics-dot--active"></div>
+                <div class="analytics-dot"></div>
+                <div class="analytics-dot"></div>
+            </div>
+
+            <!-- Caption -->
+            <p class="analytics-caption">We're crafting something special</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const dots = document.querySelectorAll('#analyticsDots .analytics-dot');
+    let active = 0;
+    setInterval(function () {
+        dots[active].classList.remove('analytics-dot--active');
+        active = (active + 1) % dots.length;
+        dots[active].classList.add('analytics-dot--active');
+    }, 900);
+}());
+</script>
+{% endblock %}
