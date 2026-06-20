@@ -1,14 +1,17 @@
 import os
+import math
 import sqlite3
 import calendar
 from datetime import datetime, timedelta, date
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash
-from database.db import get_db, init_db, seed_db, create_user, get_user_by_email
+from database.db import get_db, init_db, seed_db, create_user, get_user_by_email, create_expense
 from database.queries import get_user_by_id, get_summary_stats, get_recent_transactions, get_category_breakdown
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-in-production"
+
+VALID_CATEGORIES = ["Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other"]
 
 with app.app_context():
     init_db()
@@ -161,9 +164,48 @@ def analytics():
     return render_template("analytics.html")
 
 
-@app.route("/expenses/add")
+@app.route("/expenses/add", methods=["GET", "POST"])
 def add_expense():
-    return "Add expense — coming in Step 7"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    if request.method == "GET":
+        return render_template("add_expense.html", today=date.today().isoformat(),
+                               categories=VALID_CATEGORIES)
+
+    amount_raw   = request.form.get("amount", "").strip()
+    category     = request.form.get("category", "").strip()
+    expense_date = request.form.get("date", "").strip()
+    description  = request.form.get("description", "").strip()
+
+    def _error(msg):
+        return render_template("add_expense.html", error=msg, categories=VALID_CATEGORIES,
+                               amount=amount_raw, category=category, date=expense_date,
+                               description=description)
+
+    try:
+        amount = float(amount_raw)
+        if amount <= 0 or not math.isfinite(amount):
+            raise ValueError
+    except ValueError:
+        return _error("Amount must be a positive number.")
+
+    if category not in VALID_CATEGORIES:
+        return _error("Please select a valid category.")
+
+    if description and len(description) > 500:
+        return _error("Description must be 500 characters or fewer.")
+
+    try:
+        parsed_date = datetime.strptime(expense_date, "%Y-%m-%d").date()
+        if parsed_date > date.today() or parsed_date.year < 2000:
+            raise ValueError
+    except ValueError:
+        return _error("Please enter a date between 2000 and today.")
+
+    create_expense(session["user_id"], amount, category, expense_date, description or None)
+    flash("Expense added successfully!")
+    return redirect(url_for("profile"))
 
 
 @app.route("/expenses/<int:id>/edit")

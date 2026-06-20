@@ -87,3 +87,14 @@ def get_user_by_email(email):
     ).fetchone()
     conn.close()
     return user
+
+
+def create_expense(user_id, amount, category, expense_date, description):
+    conn = get_db()
+    cur = conn.execute(
+        "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
+        (user_id, amount, category, expense_date, description),
+    )
+    conn.commit()
+    conn.close()
+    return cur.lastrowid

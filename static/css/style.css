@@ -1014,3 +1014,42 @@ a { color: inherit; text-decoration: none; }
     color: var(--ink-faint);
     font-style: italic;
 }
+
+/* ------------------------------------------------------------------ */
+/* Add Expense — table header button & flash                           */
+/* ------------------------------------------------------------------ */
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+.flash-success {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    max-width: var(--max-width);
+    margin: 1rem auto;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+}
+
+.form-optional {
+    color: var(--ink-faint);
+    font-weight: 400;
+    font-size: 0.8rem;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
